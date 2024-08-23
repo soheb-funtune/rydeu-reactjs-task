@@ -13,11 +13,14 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import styled from "styled-components";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 const pages = ["Products", "Pricing", "Blog"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const settings = ["Home", "City", "Dashboard"];
 
 function MuiNavbar() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -48,50 +51,31 @@ function MuiNavbar() {
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            // href="#app-bar-with-responsive-menu"
             sx={{
               mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            <StyledImage src="./images/LOGO.png" />
-          </Typography>
-
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
+              display: "flex",
               flexGrow: 1,
               fontFamily: "monospace",
               fontWeight: 700,
-              letterSpacing: ".3rem",
+              // letterSpacing: ".3rem",
               color: "inherit",
               textDecoration: "none",
             }}
           >
-            <StyledImage src="./images/LOGO.png" />
+            <StyledImage
+              src={
+                location.pathname?.includes("home")
+                  ? "./images/LOGO.png"
+                  : "./images/rydue.png"
+              }
+            />
+            <StyledDiv>
+              <a>Transfers</a>
+              <a>Bus Hire</a>
+            </StyledDiv>
           </Typography>
 
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
           <HelpWrapper>
             <section>
               <img src="./images/help.png" />
@@ -111,7 +95,7 @@ function MuiNavbar() {
           <UserWrapper>
             <Box sx={{ flexGrow: 0 }}>
               <Tooltip title="Open settings">
-                <IconButton sx={{ p: 0 }} onClick={handleOpenUserMenu}>
+                <IconButton sx={{ p: 0 }}>
                   <Avatar
                     sx={{
                       p: 0,
@@ -124,28 +108,6 @@ function MuiNavbar() {
                   />
                 </IconButton>
               </Tooltip>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-appbar"
-                anchorEl={anchorElUser}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "right",
-                }}
-                open={Boolean(anchorElUser)}
-                onClose={handleCloseUserMenu}
-              >
-                {settings.map((setting) => (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
             </Box>
             <IconButton
               sx={{ p: 0 }}
@@ -153,11 +115,41 @@ function MuiNavbar() {
               aria-label="account of current user"
               aria-controls="menu-appbar"
               aria-haspopup="true"
-              onClick={handleOpenNavMenu}
               color="inherit"
             >
-              <MenuIcon />
+              <MenuIcon onClick={handleOpenUserMenu} />
             </IconButton>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-appbar"
+              anchorEl={anchorElUser}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorElUser)}
+              onClose={handleCloseUserMenu}
+            >
+              {settings.map((setting) => (
+                // <Link key={setting} to={"/city"}>
+                <MenuItem
+                  onClick={() => {
+                    handleCloseUserMenu();
+                    navigate(
+                      setting == "Home" ? "/" : `/${setting.toLowerCase()}`
+                    );
+                  }}
+                >
+                  <Typography textAlign="center">{setting}</Typography>
+                </MenuItem>
+                // </Link>
+              ))}
+            </Menu>
           </UserWrapper>
         </Toolbar>
       </Container>
@@ -169,6 +161,10 @@ export default MuiNavbar;
 const StyledImage = styled.img`
   width: auto;
   height: 20px;
+`;
+const StyledDiv = styled.div`
+  font-size: 13px;
+  margin-left: 20px;
 `;
 const UserWrapper = styled.div`
   width: contain;
@@ -207,5 +203,9 @@ const HelpWrapper = styled.div`
   section > img {
     width: auto;
     height: 13.5px;
+  }
+
+  @media (max-width: 767px) {
+    display: none;
   }
 `;
